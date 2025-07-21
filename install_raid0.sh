@@ -197,10 +197,6 @@ echo "$USERNAME:$USER_PASSWORD" | chpasswd
 echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers.d/wheel
 chmod 440 /etc/sudoers.d/wheel
 
-# Оптимизация сборки пакетов: использовать все ядра
-CORES=$(nproc)
-sed -i "s/^#\?MAKEFLAGS=.*/MAKEFLAGS=\"-j$CORES\"/" /etc/makepkg.conf
-
 # Установка git и base-devel по умолчанию
 pacman -S --noconfirm --needed git base-devel
 
