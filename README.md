@@ -210,3 +210,70 @@ sudo timeshift --create --comments "Initial backup"
 1. Проверьте логи: `journalctl -xb`
 2. Проверьте состояние RAID: `mdadm --detail /dev/md0`
 3. Проверьте загрузчик: `bootctl status`
+
+## Геймерская подготовка системы (postinstall_gaming.sh)
+
+Для быстрой подготовки Arch Linux к запуску современных игр используйте скрипт `postinstall_gaming.sh`:
+
+```bash
+chmod +x postinstall_gaming.sh
+sudo ./postinstall_gaming.sh
+```
+
+**Что делает скрипт:**
+- Автоматически определяет вашу видеокарту (NVIDIA, AMD, Intel) и устанавливает только нужные драйверы
+- Включает multilib-репозиторий
+- Устанавливает:
+  - Steam
+  - Lutris
+  - Wine (wine-staging), winetricks, protontricks
+  - Gamemode
+  - Pipewire (современная звуковая подсистема)
+  - OBS Studio (запись/стриминг)
+  - Мониторинг: htop, nvtop, gparted
+  - Поддержку геймпадов (steam-devices)
+  - yay (AUR helper)
+
+**Примечание:**
+Скрипт не ставит лишнего — драйверы и компоненты подбираются автоматически. После выполнения рекомендуется перезагрузить систему.
+
+### Советы по оптимизации и настройке игр
+
+- **Proton:**
+  - В Steam включите поддержку Proton для всех игр: Настройки → Steam Play → Включить Steam Play для всех других игр.
+  - Для нестабильных игр используйте Proton Experimental или Proton-GE (можно установить через yay: `yay -S proton-ge-custom`).
+- **Gamemode:**
+  - В Steam добавьте к запуску игры параметр `gamemoderun %command%` для автоматической оптимизации.
+- **Vulkan:**
+  - Для большинства современных игр рекомендуется использовать Vulkan-рендер (установлен с драйверами).
+- **DXVK:**
+  - DXVK (DirectX → Vulkan) уже включён в Proton, но для Wine-игр вне Steam можно установить через winetricks: `winetricks dxvk`.
+- **Мониторинг:**
+  - Используйте `htop`, `nvtop` для отслеживания загрузки CPU/GPU.
+- **Btrfs snapshots:**
+  - Для безопасных экспериментов с драйверами используйте Timeshift для создания снапшотов системы.
+
+### FAQ для геймеров
+
+**Q: Steam не запускается или не видит библиотеку игр?**
+A: Проверьте, что multilib включён, и установлены все 32-битные библиотеки драйверов (см. скрипт).
+
+**Q: Как установить Proton-GE?**
+A: После установки yay выполните: `yay -S proton-ge-custom`. В Steam выберите версию Proton-GE для игры.
+
+**Q: Как запускать Windows-игры вне Steam?**
+A: Используйте Lutris или Wine. Для удобства настройки — winetricks и protontricks.
+
+**Q: Как проверить, что драйвер видеокарты работает?**
+A: Для NVIDIA — команда `nvidia-smi`, для AMD/Intel — `glxinfo | grep OpenGL`.
+
+**Q: Как включить геймпад?**
+A: Подключите контроллер, Steam обычно определяет его автоматически. Для Xbox-контроллеров можно установить `xboxdrv` или `xpad`.
+
+**Q: Как записывать или стримить геймплей?**
+A: Используйте OBS Studio (установлен скриптом).
+
+**Q: Где искать помощь?**
+A: Arch Wiki (https://wiki.archlinux.org/title/Gaming), ProtonDB (https://www.protondb.com/), форумы Steam и Lutris.
+
+Подробнее о гейминге на Arch: [Arch Wiki Gaming](https://wiki.archlinux.org/title/Gaming)
