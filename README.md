@@ -4,7 +4,8 @@
 
 ## Структура проекта
 
-- `install_raid0.sh` — основной скрипт установки
+- `install_raid0.sh` — основной скрипт установки (RAID0)
+- `install_single.sh` — установка Arch Linux на один диск без RAID
 - `check_raid.sh` — диагностика RAID
 - `recover_raid.sh` — восстановление системы
 - `clean_raid.sh` — полная очистка RAID перед повторной установкой
@@ -47,6 +48,41 @@ chmod +x install_raid0.sh
 **Пароли по умолчанию (которые установит скрипт):**
 - Root: `root`
 - User (pinya): `root`
+
+## Установка на один диск (без RAID)
+
+Если вы хотите установить Arch Linux только на один NVMe-диск без RAID, используйте скрипт `install_single.sh`:
+
+```bash
+chmod +x install_single.sh
+./install_single.sh
+```
+
+**Что делает install_single.sh:**
+1. Очищает диск `/dev/nvme0n1`
+2. Создаёт две раздела:
+   - ESP (EFI System Partition) — 1GB
+   - Основной раздел (Btrfs)
+3. Форматирует ESP в FAT32, основной раздел в Btrfs
+4. Создаёт субволюмы Btrfs: `@`, `@home`, `@log`, `@pkg`, `@snapshots`
+5. Устанавливает Arch Linux с вашими настройками
+6. Настраивает systemd-boot для загрузки
+7. Автоматически устанавливает git и base-devel
+
+**Структура файловых систем после установки:**
+
+```
+/dev/nvme0n1p2 (Btrfs)
+├── @ (root)
+├── @home
+├── @log
+├── @pkg
+└── @snapshots
+
+/dev/nvme0n1p1 (ESP)
+```
+
+**Примечание:** Все параметры (hostname, пользователь, пароли, зеркала, часовой пояс) можно изменить в начале скрипта.
 
 ## Что делает скрипт
 
@@ -173,4 +209,4 @@ sudo timeshift --create --comments "Initial backup"
 При возникновении проблем:
 1. Проверьте логи: `journalctl -xb`
 2. Проверьте состояние RAID: `mdadm --detail /dev/md0`
-3. Проверьте загрузчик: `bootctl status` 
+3. Проверьте загрузчик: `bootctl status`
